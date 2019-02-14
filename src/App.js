@@ -6,12 +6,12 @@ import Popup from 'reactjs-popup'
 const PATH_BASE = "https://dragonsofmugloar.com";
 const PATH_START = "/api/v2/game/start";
 
-class App extends React.Component {
+class App extends Component {
   constructor(props){
     super(props);
     this.state = {
       gameId: null,
-      lives: 0,
+      lives: 3,
       gold: 0,
       level: 0,
       score: 0,
@@ -19,16 +19,19 @@ class App extends React.Component {
       turn: 0,
       ads:  [],
       message: "",
+      listings : [],
     }
     this.startNewGame = this.startNewGame.bind(this);
     this.fetchAds = this.fetchAds.bind(this);
     this.tryAd = this.tryAd.bind(this);
+    this.getListings = this.getListings.bind(this);
+    this.tryPurchase = this.tryPurchase.bind(this);
+    
   }
 
   tryAd(id){
     axios.post(`${PATH_BASE}/api/v2/${this.state.gameId}/solve/${id}`)
     .then(res => {
-      console.log(res);
       this.setState({
         lives: res.data.lives,
         gold: res.data.gold,
@@ -59,9 +62,39 @@ class App extends React.Component {
      });   
   }
 
+  getListings() {
+    axios.get(`${PATH_BASE}/api/v2/${this.state.gameId}/shop`)
+    .then(listings =>{
+      this.setState({listings: listings.data});
+    });
+  }
+
+  tryPurchase(itemId) {
+    axios.post(`${PATH_BASE}/api/v2/${this.state.gameId}/shop/buy/${itemId}`)
+    .then(res => {
+      this.setState({
+        lives: res.data.lives,
+        gold: res.data.gold,
+        level: res.data.level,
+        turn: res.data.turn,
+      });
+
+
+      if (res.data.shoppingSuccess) {
+        this.setState(prevState => ({
+          listings: prevState.listings.filter(el => el.id !== itemId )
+        })); 
+      }
+    });
+  }
+
 
   componentDidMount() { 
-    this.startNewGame(); 
+    this.startNewGame();
+    
+  }
+  componentDidUpdate() {
+    this.fetchAds(this.state.gameId);
   }
 
 
@@ -69,6 +102,11 @@ class App extends React.Component {
   render() {
     
     return (
+      this.state.lives < 1 ?
+      <div>
+        <h1>Game over!</h1>
+      </div>
+      : 
       <div>
         <div>
           <h2>Lives: {this.state.lives} | 
@@ -81,26 +119,31 @@ class App extends React.Component {
           <p>{this.state.message}</p>
         </div>
         <div style={{display: "flex"}}>
-          <button onClick={() => this.fetchAds(this.state.gameId)}>Start</button>
-          <Popup trigger={<button> Store</button>} 
+          <Popup trigger={<button>Store</button>} 
           position="right center" 
           modal
           closeOnDocumentClick
           >
-            <div>Store content here !!</div>
+            <div>
+              <Store gameId={this.state.gameId} 
+              _handlePurchase={this.tryPurchase} 
+              listings={this.state.listings}
+              updateStore={this.getListings}
+              />
+            </div>
           </Popup>
         </div>
         <div>
           <List items={this.state.ads} _handleDelete={this.tryAd}/>
         </div>
-      </div>  
+      </div> 
     );
   }
 }
 
-class List extends React.Component {
+class List extends Component {
   render() {
-    var items = this.props.items.map(ad =>{
+    let items = this.props.items.map(ad =>{
       return (
         <Advertisement key={ad.adId} 
             id={ad.adId}
@@ -118,7 +161,7 @@ class List extends React.Component {
   }
 }
 
-class Advertisement extends React.Component {
+class Advertisement extends Component {
   constructor(props) {
     super(props);
     this.tryAd = this.tryAd.bind(this);
@@ -138,6 +181,37 @@ class Advertisement extends React.Component {
         <p>{message}</p>
         <button onClick={this.tryAd}>try</button>
       </li>
+    );
+  }
+}
+
+class Store extends Component {
+  constructor(props) {
+    super(props);
+    this._handlePurchase = this._handlePurchase.bind(this);
+  }
+
+  _handlePurchase(id) {
+    this.props._handlePurchase(id);
+  }
+
+  componentDidMount() {
+    this.props.updateStore();
+  }
+
+  render() {
+
+    let items = this.props.listings.map(listing =>{
+      return (
+        <li>
+          <p>{listing.name} | {listing.cost}</p>
+          <button onClick={() => this._handlePurchase(listing.id)}>buy</button>
+        </li>
+      );
+    });
+
+    return (
+      <ul>{items}</ul>
     );
   }
 }
