@@ -5,7 +5,7 @@ import axios from 'axios';
 const PATH_BASE = "https://dragonsofmugloar.com";
 const PATH_START = "/api/v2/game/start";
 
-class App extends Component {
+class App extends React.Component {
   constructor(props){
     super(props);
     this.state = {
@@ -20,6 +20,14 @@ class App extends Component {
     }
     this.startNewGame = this.startNewGame.bind(this);
     this.fetchAds = this.fetchAds.bind(this);
+    this.deleteAd = this.deleteAd.bind(this);
+  }
+
+  deleteAd(id){
+    console.log(id);
+    this.setState(prevState => ({
+        ads: prevState.ads.filter(el => el.adId !== id )
+    }));
   }
 
   startNewGame() {
@@ -27,20 +35,18 @@ class App extends Component {
     .then(res => {
       this.setState({...res.data});
     });  
-    
   }
 
   fetchAds(gameId) {
      axios.get(`${PATH_BASE}/api/v2/${gameId}/messages`)
      .then(ads => {
       this.setState({ads: ads.data});
-     });
-
-     
+     });   
   }
 
-  componentDidMount() {  
-    this.startNewGame();
+
+  componentDidMount() { 
+    this.startNewGame(); 
   }
 
   render() {
@@ -51,30 +57,54 @@ class App extends Component {
           <button onClick={() => this.fetchAds(this.state.gameId)}>update</button>
         </div>
         <div>
-          <ul>
-            { this.state.ads.map(ad => <Advertisement 
-            probability={ad.probability} 
-            reward={ad.reward} 
-            message={ad.message}
-            />)}
-          </ul>
+          <List items={this.state.ads} _handleDelete={this.deleteAd}/>
         </div>
       </div>  
     );
   }
 }
 
-class Advertisement extends Component {
+class List extends React.Component {
   render() {
-    const { probability, reward, message} = this.props;
+    var items = this.props.items.map(ad =>{
+      return (
+        <Advertisement key={ad.adId} 
+            id={ad.adId}
+            probability={ad.probability} 
+            reward={ad.reward} 
+            message={ad.message}
+            _handleDelete={this.props._handleDelete} />
+      );
+    });
+
+    return (
+      <ul>{items}</ul>
+    );
+    
+  }
+}
+
+class Advertisement extends React.Component {
+  constructor(props) {
+    super(props);
+    this.deleteAd = this.deleteAd.bind(this);
+  }
+
+  deleteAd() {
+    this.props._handleDelete(this.props.id)
+  }
+
+  render() {
+    const { adId, probability, reward, message, _handleDelete} = this.props;
 
     return (
       <li>
         <h1>Difficulty: {probability}</h1>
         <h1>Reward: {reward}</h1>
         <p>{message}</p>
+        <button onClick={this.deleteAd}>try</button>
       </li>
-    )
+    );
   }
 }
 
