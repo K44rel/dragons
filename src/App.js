@@ -78,13 +78,6 @@ class App extends Component {
         level: res.data.level,
         turn: res.data.turn,
       });
-
-
-      if (res.data.shoppingSuccess) {
-        this.setState(prevState => ({
-          listings: prevState.listings.filter(el => el.id !== itemId )
-        })); 
-      }
     });
   }
 
