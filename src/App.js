@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
+import Popup from 'reactjs-popup'
 
 const PATH_BASE = "https://dragonsofmugloar.com";
 const PATH_START = "/api/v2/game/start";
@@ -63,6 +64,8 @@ class App extends React.Component {
     this.startNewGame(); 
   }
 
+
+
   render() {
     
     return (
@@ -77,8 +80,15 @@ class App extends React.Component {
         <div>
           <p>{this.state.message}</p>
         </div>
-        <div>
-          <button onClick={() => this.fetchAds(this.state.gameId)}>update</button>
+        <div style={{display: "flex"}}>
+          <button onClick={() => this.fetchAds(this.state.gameId)}>Start</button>
+          <Popup trigger={<button> Store</button>} 
+          position="right center" 
+          modal
+          closeOnDocumentClick
+          >
+            <div>Store content here !!</div>
+          </Popup>
         </div>
         <div>
           <List items={this.state.ads} _handleDelete={this.tryAd}/>
