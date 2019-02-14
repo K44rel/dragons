@@ -14,20 +14,34 @@ class App extends React.Component {
       gold: 0,
       level: 0,
       score: 0,
-      highscore: 0,
+      highScore: 0,
       turn: 0,
       ads:  [],
+      message: "",
     }
     this.startNewGame = this.startNewGame.bind(this);
     this.fetchAds = this.fetchAds.bind(this);
-    this.deleteAd = this.deleteAd.bind(this);
+    this.tryAd = this.tryAd.bind(this);
   }
 
-  deleteAd(id){
-    console.log(id);
+  tryAd(id){
+    axios.post(`${PATH_BASE}/api/v2/${this.state.gameId}/solve/${id}`)
+    .then(res => {
+      console.log(res);
+      this.setState({
+        lives: res.data.lives,
+        gold: res.data.gold,
+        score: res.data.score,
+        turn: res.data.turn,
+        message: res.data.message,
+      });
+    });
+
     this.setState(prevState => ({
         ads: prevState.ads.filter(el => el.adId !== id )
     }));
+
+    this.fetchAds(this.state.gameId);
   }
 
   startNewGame() {
@@ -54,10 +68,20 @@ class App extends React.Component {
     return (
       <div>
         <div>
+          <h2>Lives: {this.state.lives} | 
+            Gold: {this.state.gold} | 
+            Score: {this.state.score} |  
+            Turn: {this.state.turn} | 
+            </h2>
+        </div>
+        <div>
+          <p>{this.state.message}</p>
+        </div>
+        <div>
           <button onClick={() => this.fetchAds(this.state.gameId)}>update</button>
         </div>
         <div>
-          <List items={this.state.ads} _handleDelete={this.deleteAd}/>
+          <List items={this.state.ads} _handleDelete={this.tryAd}/>
         </div>
       </div>  
     );
@@ -87,22 +111,22 @@ class List extends React.Component {
 class Advertisement extends React.Component {
   constructor(props) {
     super(props);
-    this.deleteAd = this.deleteAd.bind(this);
+    this.tryAd = this.tryAd.bind(this);
   }
 
-  deleteAd() {
+  tryAd() {
     this.props._handleDelete(this.props.id)
   }
 
   render() {
-    const { adId, probability, reward, message, _handleDelete} = this.props;
+    const { probability, reward, message } = this.props;
 
     return (
       <li>
         <h1>Difficulty: {probability}</h1>
         <h1>Reward: {reward}</h1>
         <p>{message}</p>
-        <button onClick={this.deleteAd}>try</button>
+        <button onClick={this.tryAd}>try</button>
       </li>
     );
   }
