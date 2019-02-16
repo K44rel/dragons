@@ -28,6 +28,8 @@ class App extends Component {
     this.tryAd = this.tryAd.bind(this);
     this.getListings = this.getListings.bind(this);
     this.tryPurchase = this.tryPurchase.bind(this);
+
+    this.startNewGame();
     
   }
 
@@ -83,16 +85,9 @@ class App extends Component {
     });
   }
 
-
-  componentDidMount() { 
-    this.startNewGame();
-    
-  }
   componentDidUpdate() {
     this.fetchAds(this.state.gameId);
   }
-
-
 
   render() {
     

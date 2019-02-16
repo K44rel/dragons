@@ -9,7 +9,7 @@ const WrapperBox = styled.div`
   justify-content: space-around;
   padding: 10px;
   text-align: left;
-  background: #ccffff;
+  background: #ffc266;
   border-radius: 0px;
   position: fixed;
   width: 100%;
@@ -23,6 +23,7 @@ const InfoWrapper = styled.div`
   text-align: left;
   border-radius: 0px;
   width: 100%; 
+  
 `;
 
 const Text = styled.div`
@@ -31,20 +32,37 @@ const Text = styled.div`
 `;
 
 const Button = styled.button`
-  background-color: white;
-  color: black;
-  border: 2px solid #00ccff;
-  border-radius: 8px;
-  width: 100px;
-  font-weight: bold;
-  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border-color: #ffb400;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  font-size: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  width: 90px;
 `;
 
-const Message = styled.p`
+const Message = styled.div`
   text-align: center;
+  font-size: 20px;
+  display: table-cell;
+  vertical-align: middle;
 `;
 
+const MessageWrapper = styled.div`
+  margin-top: 10px;
+  display: table;
+  min-height: 50px;
+  max-height: 50px;
+  background: blanchedalmond;
+`;
 
+const Background = styled.div`
+  background: #ffc266;
+  width: 99.7%;
+  height: 100%;
+  padding: 1px;
+  margin: 0px;
+`;
 
 class InfoPanel extends Component {
   render(){
@@ -61,17 +79,20 @@ class InfoPanel extends Component {
             modal
             closeOnDocumentClick
             >
-              <div>
-                <Store 
-                  gameId={gameId} 
-                  _handlePurchase={_handlePurchase} 
-                  listings={listings}
-                  updateStore={updateStore}
-                />
-              </div>
+            <Background>
+              <Store 
+                gameId={gameId} 
+                _handlePurchase={_handlePurchase} 
+                listings={listings}
+                updateStore={updateStore} 
+                gold={gold}
+              />
+            </Background>
           </Popup>
         </InfoWrapper>
-        <Message>{message}</Message>
+        <MessageWrapper>
+          <Message>{message}</Message>
+        </MessageWrapper>
       </WrapperBox>
    
     )
