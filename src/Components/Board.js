@@ -10,6 +10,9 @@ const List = styled.ul`
   width: 34%;
   margin: auto;
   list-style-type: none;
+  @media only screen and (max-width: 768px) {
+    width: 70%;
+  }
 `;
 
 

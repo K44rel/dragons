@@ -22,10 +22,16 @@ const Button = styled.button`
 const H2 = styled.h2`
   font-weight: 500;
   margin: 10px;
+  @media only screen and (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const P = styled.p`
   margin-left: 10px;
+  @media only screen and (max-width: 768px) {
+    font-size: 12px;
+  }
 `;
 
 class Advertisement extends Component {

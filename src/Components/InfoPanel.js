@@ -29,6 +29,9 @@ const InfoWrapper = styled.div`
 const Text = styled.div`
   font-weight: bold;
   font-size: 24px;
+  @media only screen and (max-width: 768px) {
+    font-size: 16px;
+  }
 `;
 
 const Button = styled.button`
