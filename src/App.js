@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
 import axios from 'axios';
-import InfoPanel from './InfoPanel';
-import Board from './Board';
-import Gameover from './Gameover';
+import InfoPanel from './Components/InfoPanel';
+import Board from './Components/Board';
+import Gameover from './Components/Gameover';
 
 const PATH_BASE = "https://dragonsofmugloar.com";
 const PATH_START = "/api/v2/game/start";
